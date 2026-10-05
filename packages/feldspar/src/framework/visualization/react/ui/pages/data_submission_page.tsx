@@ -1,4 +1,4 @@
-import React, { JSX, useCallback } from "react";
+import React, { JSX, useCallback, useEffect, useRef } from "react";
 import { Weak } from "../../../../helpers";
 import TextBundle from "../../../../text_bundle";
 import { Translator } from "../../../../translator";
@@ -6,7 +6,6 @@ import { Translatable } from "../../../../types/elements";
 import { PropsUIPageDataSubmission } from "../../../../types/pages";
 import { isPropsUIPromptConsentFormTable } from "../../../../types/prompts";
 import { ReactFactoryContext } from "../../factory";
-import { Title1 } from "../elements/text";
 import { Page } from "./templates/page";
 import { createPromptFactoriesWithDefaults, PromptContext } from "../prompts/factory";
 
@@ -19,6 +18,16 @@ export const DataSubmissionPage = (props: Props): JSX.Element => {
     props.promptFactories
   );
   const DataSubmissionData = React.useRef<Map<string, string>>(new Map());
+
+  // When the step changes (choosing a file, progress, the consent page...), focus moves to the heading so
+  // screen readers announce the new page. Progress updates within a step keep the same kinds of items
+  // and don't move focus.
+  const heading = useRef<HTMLHeadingElement>(null);
+  const bodyItems = Array.isArray(props.body) ? props.body : [props.body];
+  const step = bodyItems.map((item: any) => item?.__type__).join(",");
+  useEffect(() => {
+    heading.current?.focus();
+  }, [step]);
 
   const onDataSubmissionDataChanged = useCallback((key: string, value: any)=> {
     DataSubmissionData.current.set(key, value);
@@ -70,7 +79,9 @@ export const DataSubmissionPage = (props: Props): JSX.Element => {
 
   const body: JSX.Element = (
     <>
-      <Title1 text={title} />
+      <h1 ref={heading} tabIndex={-1} className="text-title3 font-title3 sm:text-title2 lg:text-title1 lg:font-title1 text-grey1 mb-6 md:mb-8 focus:outline-none">
+        {title}
+      </h1>
       {renderBody(props)}
     </>
   );

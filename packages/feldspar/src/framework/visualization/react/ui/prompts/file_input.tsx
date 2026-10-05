@@ -47,9 +47,13 @@ export const FileInput = (props: Props): JSX.Element => {
         </div>
         <div className='mt-8' />
         <div className='p-6 border-grey4 border-2 rounded'>
-          <input ref={input} id='input' type='file' className='hidden' accept={extensions} onChange={handleSelect} />
+          {/* Hidden: the "Choose file" button opens it, and is the control people (and screen readers) use. */}
+          <input ref={input} id='input' type='file' className='hidden' tabIndex={-1} aria-hidden='true' accept={extensions} onChange={handleSelect} />
           <div className='flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center'>
-            <BodyLarge text={selectedFile?.name ?? placeholder} margin='' color={selectedFile === undefined ? 'text-grey2' : 'textgrey1'} />
+            {/* Announced when a file is chosen. */}
+            <div role='status'>
+              <BodyLarge text={selectedFile?.name ?? placeholder} margin='' color={selectedFile === undefined ? 'text-grey2' : 'text-grey1'} />
+            </div>
             <div className='grow' />
             <div className='flex-wrap'>
               <div className='flex flex-row'>
@@ -59,7 +63,7 @@ export const FileInput = (props: Props): JSX.Element => {
           </div>
         </div>
         <div className='mt-4' />
-        <div className={`${selectedFile === undefined ? 'opacity-30' : 'opacity-100'}`}>
+        <div>
           <BodySmall text={note} margin='' />
           <div className='mt-8' />
           <div className='flex flex-row gap-4'>

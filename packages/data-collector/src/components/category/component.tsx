@@ -2,8 +2,12 @@
 // whole category out, and an optional inspector to page through, search and delete
 // individual entries. Rows are fetched from the worker a page at a time; the card reports
 // only the participant's choices ({included, deleted row ids}) to the page.
+//
+// Accessibility: every control is a native element with a name (a row's checkbox is "Select entry
+// 51"); deleted rows say so to screen readers, not only by strike-through; page changes in the
+// inspector are announced. On narrow screens the tables become one stacked card per entry.
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useId, useState } from 'react'
 import type { ReactFactoryContext } from '@eyra/feldspar'
 import { useRowSource } from './row_source'
 import { translate, type Cell, type PropsUIPromptCategory, type RowView } from './types'
@@ -24,14 +28,17 @@ const TEXT: Record<string, Record<string, string>> = {
     excluded: 'This data will not be donated.',
     inspect: 'Look through all entries',
     hide: 'Hide entries',
-    search: 'Search',
+    search: 'Search entries',
     shown: 'Entries {first}–{last} of {total}',
     none: 'No matching entries',
     previous: 'Previous',
     next: 'Next',
+    select: 'Select',
+    selectEntry: 'Select entry {n}',
     deleteSelected: 'Delete selected ({n})',
-    deleted: 'Deleted',
+    deleted: 'deleted',
     restore: 'Restore',
+    restoreEntry: 'Restore entry {n}',
     deletedCount: '{n} entries deleted',
     restoreAll: 'Restore all',
     loading: 'Loading…',
@@ -46,14 +53,17 @@ const TEXT: Record<string, Record<string, string>> = {
     excluded: 'Deze gegevens worden niet gedoneerd.',
     inspect: 'Alle regels bekijken',
     hide: 'Regels verbergen',
-    search: 'Zoeken',
+    search: 'Regels doorzoeken',
     shown: 'Regels {first}–{last} van {total}',
     none: 'Geen overeenkomende regels',
     previous: 'Vorige',
     next: 'Volgende',
+    select: 'Selecteren',
+    selectEntry: 'Regel {n} selecteren',
     deleteSelected: 'Geselecteerde verwijderen ({n})',
-    deleted: 'Verwijderd',
+    deleted: 'verwijderd',
     restore: 'Herstellen',
+    restoreEntry: 'Regel {n} herstellen',
     deletedCount: '{n} regels verwijderd',
     restoreAll: 'Alles herstellen',
     loading: 'Laden…',
@@ -61,14 +71,18 @@ const TEXT: Record<string, Record<string, string>> = {
   }
 }
 
+type Text = (key: string, values?: Record<string, string>) => string
+
 function fill (template: string, values: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match)
 }
 
 export const CategoryCard: React.FC<Props> = (props) => {
   const { id, title, description, summary, columns, headers, rowCount, dateRange, examples, channel, locale } = props
-  const text = (key: string, values: Record<string, string> = {}): string => fill((TEXT[locale] ?? TEXT.en)[key], values)
+  const text: Text = (key, values = {}) => fill((TEXT[locale] ?? TEXT.en)[key], values)
   const number = (n: number): string => n.toLocaleString(locale)
+  const headingId = useId()
+  const inspectorId = useId()
 
   const [included, setIncluded] = useState(true)
   const [deleted, setDeleted] = useState<Set<number>>(new Set())
@@ -93,8 +107,8 @@ export const CategoryCard: React.FC<Props> = (props) => {
   const labels = columns.map((column) => (headers?.[column] !== undefined ? translate(headers[column], locale) : column))
 
   return (
-    <section className={`category ${included ? '' : 'category--excluded'}`} data-testid={`category-${id}`}>
-      <h3 className='category__title'>{translate(title, locale)}</h3>
+    <section className={`category ${included ? '' : 'category--excluded'}`} aria-labelledby={headingId} data-testid={`category-${id}`}>
+      <h2 id={headingId} className='category__title'>{translate(title, locale)}</h2>
       {description !== undefined && <p className='category__description'>{translate(description, locale)}</p>}
 
       {rowCount === 0
@@ -104,23 +118,31 @@ export const CategoryCard: React.FC<Props> = (props) => {
             <p className='category__summary'>{summaryLine}</p>
             <label className='category__include'>
               <input type='checkbox' checked={included} onChange={(e) => setIncluded(e.target.checked)} />
-              {text('include')}
+              <span>{text('include')}</span>
             </label>
             {!included && <p className='category__note'>{text('excluded')}</p>}
             {included && (
               <>
-                <div className='category__label'>{text('examples')}</div>
-                <RowTable labels={labels} rows={examples} deleted={deleted} />
-                <button type='button' className='category__link' onClick={() => setInspecting(!inspecting)}>
+                <h3 className='category__label'>{text('examples')}</h3>
+                <RowTable labels={labels} rows={examples} deleted={deleted} text={text} caption={`${translate(title, locale)}: ${text('examples')}`} />
+                <button
+                  type='button'
+                  className='category__link btn-focus'
+                  aria-expanded={inspecting}
+                  aria-controls={inspectorId}
+                  onClick={() => setInspecting(!inspecting)}
+                >
                   {text(inspecting ? 'hide' : 'inspect')}
                 </button>
-                {inspecting && (
-                  <Inspector id={id} channel={channel} labels={labels} deleted={deleted} onDelete={toggleDeleted} text={text} number={number} />
-                )}
+                <div id={inspectorId}>
+                  {inspecting && (
+                    <Inspector id={id} title={translate(title, locale)} channel={channel} labels={labels} deleted={deleted} onDelete={toggleDeleted} text={text} number={number} />
+                  )}
+                </div>
                 {deleted.size > 0 && (
                   <p className='category__note'>
                     {text('deletedCount', { n: number(deleted.size) })}{' '}
-                    <button type='button' className='category__link' onClick={() => setDeleted(new Set())}>{text('restoreAll')}</button>
+                    <button type='button' className='category__link btn-focus' onClick={() => setDeleted(new Set())}>{text('restoreAll')}</button>
                   </p>
                 )}
               </>
@@ -137,29 +159,39 @@ const RowTable: React.FC<{
   labels: string[]
   rows: RowView[]
   deleted: Set<number>
-  selection?: { selected: Set<number>, toggle: (id: number) => void, restore: (id: number) => void, deletedLabel: string, restoreLabel: string }
-}> = ({ labels, rows, deleted, selection }) => (
+  text: Text
+  caption: string
+  selection?: { selected: Set<number>, toggle: (id: number) => void, restore: (id: number) => void }
+}> = ({ labels, rows, deleted, text, caption, selection }) => (
   <div className='category__table-wrap'>
-    <table className='category__table'>
+    <table className={`category__table ${selection !== undefined ? 'category__table--selectable' : ''}`}>
+      <caption className='sr-only'>{caption}</caption>
       <thead>
         <tr>
-          {selection !== undefined && <th />}
-          {labels.map((label) => <th key={label}>{label}</th>)}
+          {selection !== undefined && <th scope='col' className='category__select'><span className='sr-only'>{text('select')}</span></th>}
+          {labels.map((label) => <th scope='col' key={label}>{label}</th>)}
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => {
           const isDeleted = deleted.has(row.id)
+          const n = String(row.id + 1)
           return (
             <tr key={row.id} className={isDeleted ? 'category__row--deleted' : ''}>
               {selection !== undefined && (
                 <td className='category__select'>
                   {isDeleted
-                    ? <button type='button' className='category__link' onClick={() => selection.restore(row.id)} title={selection.deletedLabel}>{selection.restoreLabel}</button>
-                    : <input type='checkbox' checked={selection.selected.has(row.id)} onChange={() => selection.toggle(row.id)} />}
+                    ? <button type='button' className='category__link btn-focus' aria-label={text('restoreEntry', { n })} onClick={() => selection.restore(row.id)}>{text('restore')}</button>
+                    : <input type='checkbox' aria-label={text('selectEntry', { n })} checked={selection.selected.has(row.id)} onChange={() => selection.toggle(row.id)} />}
                 </td>
               )}
-              {row.cells.map((cell, c) => <td key={c} title={display(cell)}>{display(cell)}</td>)}
+              {row.cells.map((cell, c) => (
+                // data-label heads each value when the table is stacked on narrow screens.
+                <td key={c} data-label={labels[c]} title={display(cell)}>
+                  {display(cell)}
+                  {isDeleted && c === 0 && <span className='sr-only'> ({text('deleted')})</span>}
+                </td>
+              ))}
             </tr>
           )
         })}
@@ -170,14 +202,16 @@ const RowTable: React.FC<{
 
 const Inspector: React.FC<{
   id: string
+  title: string
   channel: string
   labels: string[]
   deleted: Set<number>
   onDelete: (ids: number[], remove: boolean) => void
-  text: (key: string, values?: Record<string, string>) => string
+  text: Text
   number: (n: number) => string
-}> = ({ id, channel, labels, deleted, onDelete, text, number }) => {
+}> = ({ id, title, channel, labels, deleted, onDelete, text, number }) => {
   const fetchRows = useRowSource(channel)
+  const searchId = useId()
   const [search, setSearch] = useState('')
   const [query, setQuery] = useState('')
   const [offset, setOffset] = useState(0)
@@ -206,36 +240,45 @@ const Inspector: React.FC<{
     return next
   })
 
+  const status = failed
+    ? text('failed')
+    : page === null
+      ? text('loading')
+      : page.total === 0
+        ? text('none')
+        : text('shown', { first: number(offset + 1), last: number(Math.min(offset + PAGE_SIZE, page.total)), total: number(page.total) })
+
   return (
     <div className='category__inspector'>
-      <input type='search' className='category__search' placeholder={text('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
-      {failed && <p className='category__note'>{text('failed')}</p>}
-      {page === null && !failed && <p className='category__note'>{text('loading')}</p>}
-      {page !== null && (page.total === 0
-        ? <p className='category__note'>{text('none')}</p>
-        : (
-          <>
-            <RowTable
-              labels={labels}
-              rows={page.rows}
-              deleted={deleted}
-              selection={{ selected, toggle, restore: (rowId) => onDelete([rowId], false), deletedLabel: text('deleted'), restoreLabel: text('restore') }}
-            />
-            <div className='category__pager'>
-              <button type='button' disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>{text('previous')}</button>
-              <span>{text('shown', { first: number(offset + 1), last: number(Math.min(offset + PAGE_SIZE, page.total)), total: number(page.total) })}</span>
-              <button type='button' disabled={offset + PAGE_SIZE >= page.total} onClick={() => setOffset(offset + PAGE_SIZE)}>{text('next')}</button>
-              <button
-                type='button'
-                className='category__delete'
-                disabled={selected.size === 0}
-                onClick={() => { onDelete([...selected], true); setSelected(new Set()) }}
-              >
-                {text('deleteSelected', { n: number(selected.size) })}
-              </button>
-            </div>
-          </>
-          ))}
+      <label htmlFor={searchId} className='category__search-label'>{text('search')}</label>
+      <input id={searchId} type='search' className='category__search' value={search} onChange={(e) => setSearch(e.target.value)} />
+      {/* Announced when the page, the search or the loading state changes. */}
+      <p className='category__status' role='status' aria-live='polite'>{status}</p>
+      {page !== null && page.total > 0 && (
+        <>
+          {/* Above the rows, so it is near at hand: tick entries, then Shift+Tab back to delete them. */}
+          <div className='category__pager' role='toolbar' aria-label={title}>
+            <button type='button' className='btn-focus' disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>{text('previous')}</button>
+            <button type='button' className='btn-focus' disabled={offset + PAGE_SIZE >= page.total} onClick={() => setOffset(offset + PAGE_SIZE)}>{text('next')}</button>
+            <button
+              type='button'
+              className='category__delete btn-focus'
+              disabled={selected.size === 0}
+              onClick={() => { onDelete([...selected], true); setSelected(new Set()) }}
+            >
+              {text('deleteSelected', { n: number(selected.size) })}
+            </button>
+          </div>
+          <RowTable
+            labels={labels}
+            rows={page.rows}
+            deleted={deleted}
+            text={text}
+            caption={`${title}: ${status}`}
+            selection={{ selected, toggle, restore: (rowId) => onDelete([rowId], false) }}
+          />
+        </>
+      )}
     </div>
   )
 }

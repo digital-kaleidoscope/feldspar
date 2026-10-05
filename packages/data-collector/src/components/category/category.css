@@ -1,23 +1,45 @@
-/* Deliberately plain: final styling comes with the study-site embedding. */
+/* The consent cards, in the study site's style, with the theme's colours (light and dark, see
+   @eyra/feldspar's styles.css). Controls are at least 44px tall on touch screens (WCAG 2.5.8 asks
+   for 24px). Below 640px the tables become one stacked card per entry, each value under its label. */
 
-.category { border: 2px solid #eaeaea; border-radius: 8px; padding: 24px; margin-bottom: 32px; font-family: inherit; }
-.category--excluded { background: #f7f7f7; }
-.category__title { font-size: 1.25rem; font-weight: 700; margin: 0 0 8px; }
-.category__description { margin: 0 0 8px; color: #555; }
-.category__summary { font-size: 1.1rem; margin: 0 0 16px; }
-.category__include { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; cursor: pointer; }
-.category__note { color: #555; margin: 8px 0; }
-.category__label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: #777; margin-bottom: 4px; }
-.category__table-wrap { overflow-x: auto; margin-bottom: 12px; }
-.category__table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.9rem; }
-.category__table th, .category__table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.category { border: 1px solid var(--fs-grey4); border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem; color: var(--fs-grey1); background: var(--fs-white); }
+@media (min-width: 640px) { .category { padding: 1.5rem; } }
+.category--excluded { background: var(--fs-grey5); }
+.category__title { font-size: 1.25rem; line-height: 1.3; font-weight: 700; margin: 0 0 0.5rem; }
+.category__description { margin: 0 0 0.5rem; color: var(--fs-grey2); }
+.category__summary { font-size: 1.0625rem; margin: 0 0 1rem; }
+.category__include { display: inline-flex; gap: 0.625rem; align-items: center; min-height: 44px; margin-bottom: 0.75rem; cursor: pointer; font-weight: 600; }
+.category__include input, .category__select input { width: 1.25rem; height: 1.25rem; accent-color: var(--fs-primary); cursor: pointer; }
+.category__note { color: var(--fs-grey2); margin: 0.5rem 0; }
+.category__label { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--fs-grey2); margin: 0 0 0.25rem; }
+
+.category__table-wrap { margin-bottom: 0.75rem; }
+.category__table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.875rem; }
+.category__table th, .category__table td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--fs-grey4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .category__table th { font-weight: 600; }
-.category__select { width: 80px; }
-.category__row--deleted td:not(.category__select) { text-decoration: line-through; color: #aaa; }
-.category__link { background: none; border: none; padding: 0; color: #1e5bd6; text-decoration: underline; cursor: pointer; font: inherit; }
-.category__inspector { margin-top: 12px; }
-.category__search { width: 100%; max-width: 320px; padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 8px; font: inherit; }
-.category__pager { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-.category__pager button { padding: 4px 12px; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font: inherit; }
-.category__pager button:disabled { opacity: 0.4; cursor: default; }
-.category__pager .category__delete { margin-left: auto; border-color: #d33; color: #d33; }
+.category__select { width: 5.5rem; }
+.category__row--deleted td:not(.category__select) { text-decoration: line-through; color: var(--fs-grey2); }
+
+/* Narrow screens: no columns to squeeze; each entry is a small card, every value labelled. */
+@media (max-width: 639px) {
+  .category__table, .category__table tbody, .category__table tr, .category__table td { display: block; width: 100%; }
+  .category__table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .category__table tr { border: 1px solid var(--fs-grey4); border-radius: 0.5rem; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; }
+  .category__table td { border: 0; padding: 0.125rem 0; white-space: normal; overflow-wrap: anywhere; }
+  .category__table td[data-label]::before { content: attr(data-label); display: block; font-size: 0.75rem; font-weight: 600; color: var(--fs-grey2); }
+  .category__table td.category__select { display: flex; align-items: center; min-height: 44px; }
+}
+
+.category__link { background: none; border: none; padding: 0.25rem 0; min-height: 44px; color: var(--fs-primary); text-decoration: underline; text-underline-offset: 0.15em; cursor: pointer; font: inherit; font-weight: 600; }
+.category__inspector { margin-top: 0.75rem; }
+.category__search-label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+.category__search { width: 100%; max-width: 22rem; min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid var(--fs-grey3); border-radius: 0.375rem; background: var(--fs-white); color: var(--fs-grey1); font: inherit; }
+.category__search:focus-visible { outline: 3px solid var(--fs-primary); outline-offset: 1px; }
+.category__status { color: var(--fs-grey2); margin: 0.5rem 0; }
+.category__pager { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+.category__pager button { min-height: 44px; padding: 0.5rem 1rem; border: 1px solid var(--fs-grey3); border-radius: 0.375rem; background: var(--fs-white); color: var(--fs-grey1); cursor: pointer; font: inherit; font-weight: 600; }
+.category__pager button:disabled { opacity: 0.5; cursor: not-allowed; }
+.category__pager .category__delete { border-color: var(--fs-delete); color: var(--fs-delete); }
+@media (min-width: 640px) { .category__pager .category__delete { margin-left: auto; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
