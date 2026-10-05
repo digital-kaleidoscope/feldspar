@@ -1,19 +1,14 @@
-/* The study site's type: Inter, and its base size (13px on phones, 14px, 15px on larger screens), so
-   the app's rem sizes match the page around it. Colours and the rest of the theme are in
-   @eyra/feldspar's styles.css. */
+/* Inter, as on the study site. The base size is a little larger than the site's own (13px on its phones):
+   this is dense data people have to read and decide on, so 15px on phones and 16px on large screens.
+   Colours and the rest of the theme are in @eyra/feldspar's styles.css. */
 @import "@fontsource-variable/inter";
 
 html {
-  font-size: 13px;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
 }
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   html {
-    font-size: 14px;
-  }
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
