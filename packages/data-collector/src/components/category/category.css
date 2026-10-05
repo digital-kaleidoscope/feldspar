@@ -1,0 +1,23 @@
+/* Deliberately plain: final styling comes with the study-site embedding. */
+
+.category { border: 2px solid #eaeaea; border-radius: 8px; padding: 24px; margin-bottom: 32px; font-family: inherit; }
+.category--excluded { background: #f7f7f7; }
+.category__title { font-size: 1.25rem; font-weight: 700; margin: 0 0 8px; }
+.category__description { margin: 0 0 8px; color: #555; }
+.category__summary { font-size: 1.1rem; margin: 0 0 16px; }
+.category__include { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; cursor: pointer; }
+.category__note { color: #555; margin: 8px 0; }
+.category__label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: #777; margin-bottom: 4px; }
+.category__table-wrap { overflow-x: auto; margin-bottom: 12px; }
+.category__table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.9rem; }
+.category__table th, .category__table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.category__table th { font-weight: 600; }
+.category__select { width: 80px; }
+.category__row--deleted td:not(.category__select) { text-decoration: line-through; color: #aaa; }
+.category__link { background: none; border: none; padding: 0; color: #1e5bd6; text-decoration: underline; cursor: pointer; font: inherit; }
+.category__inspector { margin-top: 12px; }
+.category__search { width: 100%; max-width: 320px; padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 8px; font: inherit; }
+.category__pager { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.category__pager button { padding: 4px 12px; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font: inherit; }
+.category__pager button:disabled { opacity: 0.4; cursor: default; }
+.category__pager .category__delete { margin-left: auto; border-color: #d33; color: #d33; }

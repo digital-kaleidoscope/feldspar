@@ -1,0 +1,31 @@
+{
+  "url": "http://localhost:4173/",
+  "fixture": "/fixtures/items_3m.zip",
+  "metadata": {
+    "format": "feldspar-demo-items-1",
+    "items": 3000000
+  },
+  "outcome": "passed",
+  "sample_interval_ms": 250,
+  "peak_rss_kib": 2769944,
+  "phase_peaks_kib": {
+    "initialization": 1347884,
+    "upload_and_review": 2760152,
+    "delete_and_undo": 2760152,
+    "donation": 2769944
+  },
+  "samples": 100,
+  "phase_ms": {
+    "initialization": 4520,
+    "upload_and_review": 19378,
+    "delete_and_undo": 4,
+    "donation": 54
+  },
+  "donation": {
+    "rows": 1,
+    "content_intact": true,
+    "deleted_rows": 0,
+    "donation_bytes": 1247
+  },
+  "total_ms": 23956
+}

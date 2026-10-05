@@ -6,6 +6,8 @@
   "homepage": ".",
   "dependencies": {
     "@eyra/feldspar": "workspace:*",
+    "@streamparser/json": "^0.0.26",
+    "@zip.js/zip.js": "^2.23.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

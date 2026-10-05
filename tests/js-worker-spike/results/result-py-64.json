@@ -1,0 +1,32 @@
+{
+  "url": "http://localhost:4173/",
+  "fixture": "/fixtures/mem_64.zip",
+  "metadata": {
+    "format": "feldspar-demo-memory-1",
+    "text_bytes": 67108864,
+    "files": 256
+  },
+  "outcome": "passed",
+  "sample_interval_ms": 250,
+  "peak_rss_kib": 2720060,
+  "phase_peaks_kib": {
+    "initialization": 1307740,
+    "upload_and_review": 2047452,
+    "delete_and_undo": 2462392,
+    "donation": 2720060
+  },
+  "samples": 68,
+  "phase_ms": {
+    "initialization": 5082,
+    "upload_and_review": 5330,
+    "delete_and_undo": 3511,
+    "donation": 2120
+  },
+  "donation": {
+    "rows": 256,
+    "content_intact": true,
+    "deleted_rows": 0,
+    "donation_bytes": 67153038
+  },
+  "total_ms": 16043
+}
