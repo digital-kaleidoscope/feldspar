@@ -33,12 +33,12 @@ function App() {
         logLevel={import.meta.env.DEV ? "debug" : "info"}
       />
       {/* AGPL-3.0 §13: people using this over a network are offered its source. */}
-      <p className="px-6 pb-4 text-right font-body text-xs text-grey2">
+      <footer className="px-4 pb-4 sm:px-6 text-right font-body text-caption text-grey2">
         This donation tool is open source (AGPL-3.0):{" "}
-        <a className="underline" href="https://github.com/digital-kaleidoscope/feldspar" target="_blank" rel="noopener noreferrer">
-          source code
+        <a className="btn-focus underline text-primary" href="https://github.com/digital-kaleidoscope/feldspar" target="_blank" rel="noopener noreferrer">
+          source code<span className="sr-only"> (opens in a new tab)</span>
         </a>
-      </p>
+      </footer>
     </div>
   );
 }

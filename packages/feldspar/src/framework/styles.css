@@ -1,7 +1,94 @@
-@import './fonts.css' layer(base);
 @import 'tailwindcss';
 
 @config "../../tailwind.config.js";
+
+/* Theme: the study site's look (Inter, blue-700, yellow focus), light and dark. Colours meet WCAG AA
+   contrast where they carry text: grey2 on white 7.7:1, primary on white 6.7:1, white on primary
+   6.7:1, white on success 5.0:1; in dark mode the fills are light and the text on them dark. The host
+   page sets data-theme on <html>; without it, the system setting decides. */
+:root {
+  --fs-primary: #1d4ed8;
+  --fs-primarylight: #dbeafe;
+  --fs-secondary: #be123c;
+  --fs-tertiary: #dbeafe;
+  --fs-success: #15803d;
+  --fs-successlight: #dcfce7;
+  --fs-warning: #b45309;
+  --fs-warninglight: #fef3c7;
+  --fs-delete: #b91c1c;
+  --fs-deletelight: #fee2e2;
+  --fs-black: #000000;
+  --fs-grey1: #18181b;
+  --fs-grey2: #52525b;
+  --fs-grey3: #a1a1aa;
+  --fs-grey4: #e4e4e7;
+  --fs-grey5: #f4f4f5;
+  --fs-grey6: #fafafa;
+  --fs-white: #ffffff;
+  --fs-focus: #facc15;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --fs-primary: #60a5fa;
+  --fs-primarylight: #1e3a8a;
+  --fs-secondary: #fb7185;
+  --fs-tertiary: #1e3a8a;
+  --fs-success: #4ade80;
+  --fs-successlight: #14532d;
+  --fs-warning: #fbbf24;
+  --fs-warninglight: #451a03;
+  --fs-delete: #f87171;
+  --fs-deletelight: #450a0a;
+  --fs-black: #ffffff;
+  --fs-grey1: #f4f4f5;
+  --fs-grey2: #a1a1aa;
+  --fs-grey3: #71717a;
+  --fs-grey4: #3f3f46;
+  --fs-grey5: #27272a;
+  --fs-grey6: #18181b;
+  --fs-white: #000000;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --fs-primary: #60a5fa;
+    --fs-primarylight: #1e3a8a;
+    --fs-secondary: #fb7185;
+    --fs-tertiary: #1e3a8a;
+    --fs-success: #4ade80;
+    --fs-successlight: #14532d;
+    --fs-warning: #fbbf24;
+    --fs-warninglight: #451a03;
+    --fs-delete: #f87171;
+    --fs-deletelight: #450a0a;
+    --fs-black: #ffffff;
+    --fs-grey1: #f4f4f5;
+    --fs-grey2: #a1a1aa;
+    --fs-grey3: #71717a;
+    --fs-grey4: #3f3f46;
+    --fs-grey5: #27272a;
+    --fs-grey6: #18181b;
+    --fs-white: #000000;
+    color-scheme: dark;
+  }
+}
+
+body {
+  background-color: var(--fs-white);
+  color: var(--fs-grey1);
+}
+
+/* The study site's focus style: yellow, with a dark outline, for every button. */
+.btn-focus:focus-visible {
+  outline: 4px solid #000000;
+  outline-offset: 1px;
+  background-color: var(--fs-focus);
+  color: #18181b;
+  box-shadow: none;
+}
+.btn-focus:disabled {
+  opacity: 0.5;
+}
 
 .table-text-preview {
   display: -webkit-box;
