@@ -5,15 +5,21 @@ import { installDemoHost } from "./host/demo_host";
 import jsWorkerUrl from "./js_worker/worker.ts?worker&url";
 import tiktokWorkerUrl from "./js_worker/tiktok_worker.ts?worker&url";
 
-// VITE_WORKER=js builds the demo flow on the JavaScript runtime instead of Pyodide;
-// VITE_WORKER=tiktok builds the TikTok flow (JavaScript only).
+// Donation flows on the JavaScript runtime, by platform. A host page embeds the app as
+// `.../index.html?platform=<name>`; without the parameter, VITE_WORKER picks one at build time
+// (`js` is the demo flow), and with neither it is upstream's Python demo.
 const workers: Record<string, string> = { js: jsWorkerUrl, tiktok: tiktokWorkerUrl };
-const workerUrl = workers[import.meta.env.VITE_WORKER ?? ""] ?? "./py_worker.js";
+const requested = new URLSearchParams(window.location.search).get("platform");
+const workerUrl = requested !== null ? workers[requested] : workers[import.meta.env.VITE_WORKER ?? ""] ?? "./py_worker.js";
 
 // VITE_DEMO_HOST=1 plays the host page itself, with a fake donation upload (see host/demo_host.ts).
+// Imported always (it is small and inert otherwise) so it is listening before the app announces itself.
 if (import.meta.env.VITE_DEMO_HOST === "1") installDemoHost();
 
 function App() {
+  if (workerUrl === undefined) {
+    return <p className="p-8 font-body text-bodylarge">This data donation isn’t available.</p>;
+  }
   return (
     <div className="App">
       <ScriptHostComponent
@@ -26,6 +32,13 @@ function App() {
         ]}
         logLevel={import.meta.env.DEV ? "debug" : "info"}
       />
+      {/* AGPL-3.0 §13: people using this over a network are offered its source. */}
+      <p className="px-6 pb-4 text-right font-body text-xs text-grey2">
+        This donation tool is open source (AGPL-3.0):{" "}
+        <a className="underline" href="https://github.com/digital-kaleidoscope/feldspar" target="_blank" rel="noopener noreferrer">
+          source code
+        </a>
+      </p>
     </div>
   );
 }
