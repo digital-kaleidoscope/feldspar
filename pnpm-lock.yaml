@@ -22,8 +22,8 @@ importers:
         specifier: 26.6.4
         version: 26.6.4
       axe-core:
-        specifier: 4.13.0
-        version: 4.13.0
+        specifier: 4.14.0
+        version: 4.14.0
       concurrently:
         specifier: 10.0.5
         version: 10.0.5
@@ -1431,8 +1431,8 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
 
-  axe-core@4.13.0:
-    resolution: {integrity: sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A==}
+  axe-core@4.14.0:
+    resolution: {integrity: sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==}
     engines: {node: '>=4'}
 
   babel-jest@30.5.2:
@@ -4251,7 +4251,7 @@ snapshots:
       postcss: 8.5.28
       postcss-value-parser: 4.2.0
 
-  axe-core@4.13.0: {}
+  axe-core@4.14.0: {}
 
   babel-jest@30.5.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
